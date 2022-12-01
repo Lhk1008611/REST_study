@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <h1>网页</h1>
+    <button class="list-btn">加载数据</button>
+    <hr>
+    <div class="student-list">
+
+    </div>
+
+
+    <script>
+        const listBtn = document.querySelector(".list-btn");
+        const list = document.querySelector(".student-list");
+        listBtn.onclick = () => {
+          fetch("http://localhost:3000/students")
+          .then((response) =>{
+            if(response.status === 200){
+                //response.json() 可以读取json格式的数据，返回一个promise
+                return response.json();
+            }else{
+                throw new Error("加载失败");
+            }
+          })
+          .then((response)=>{
+            //获取到数据，进行页面渲染
+            console.log(response);
+          })
+          .catch((error)=>{
+            console.log("出错了",error);
+          })
+        };
+    </script>
+</body>
+
+</html>

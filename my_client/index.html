@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <h1>网页</h1>
+    <button class="list-btn">加载数据</button>
+    <hr>
+    <div class="student-list">
+
+    </div>
+
+
+    <script>
+        const listBtn = document.querySelector(".list-btn");
+        const list = document.querySelector(".student-list");
+        listBtn.onclick = () => {
+            //创建XMLHttpRequest对象
+            const xhr = new XMLHttpRequest();
+
+            //设置响应体类型，设置好后自动对数据进行转换
+            xhr.responseType = "json";
+
+            //读取异步获取的数据，通过绑定load事件读取
+            xhr.onload = function () {
+                //xhr.status表示响应状态码
+                if (xhr.status === 200) {
+                    //xhr.response表示响应的数据
+                    // const studentlLst = JSON.parse(xhr.response);  //解析为json
+                    const result = xhr.response;
+                    if (result.status === "ok") {
+                        const ul = document.createElement("ul");
+                        list.appendChild(ul);
+                        for (let student of result.data) {
+                            ul.insertAdjacentHTML(
+                                "beforeend",
+                                `<li>${student.id} - ${student.name} - ${student.age} - ${student.gender} - ${student.address}</li>`
+                            )
+                        }
+                    }
+                }
+            }
+
+            //设置请求信息
+            xhr.open("GET", "http://localhost:3000/students");
+
+            //发送请求
+            xhr.send();
+
+        };
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="login">
+        <h1>欢迎登陆</h1>
+        <h2 class="error-info"></h2>
+        <form>
+            <div>
+                <input type="text" class="username">
+            </div>
+            <div>
+                <input type="password" class="password">
+            </div>
+            <div>
+                <button class="login-btn" type="button">登陆</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+<script>
+    const loginBtn = document.querySelector(".login-btn");
+    const login = document.querySelector(".login");
+    if (localStorage.getItem("nickname")) {
+        login.innerHTML = `
+                <h1>用户名：${localStorage.getItem("nickname")}</h1>
+                `
+    } else {
+        loginBtn.onclick = () => {
+            const username = document.querySelector(".username").value.trim();
+            const password = document.querySelector(".password").value.trim();
+
+            fetch("http://localhost:3000/login", {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    password
+                })
+            }).then((res) => res.json())
+                .then((res) => {
+                    if (res.status !== "ok") {
+                        throw new Error("用户名或密码错误");
+                    }
+                    localStorage.setItem("username", res.data.username)
+                    localStorage.setItem("nickname", res.data.nickname)
+
+                    login.innerHTML = `
+                <h1>用户名：${res.data.nickname}</h1>
+                `
+                })
+                .catch((err) => {
+                    document.querySelector(".error-info").innerText = "用户名或密码错误"
+                })
+        }
+    }
+
+
+</script>
+
+</html>

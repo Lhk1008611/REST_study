@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+    <h1>网页</h1>
+    <button class="list-btn">加载数据</button>
+    <hr>
+    <div class="student-list">
+
+    </div>
+
+
+    <script>
+        const listBtn = document.querySelector(".list-btn");
+        const list = document.querySelector(".student-list");
+        listBtn.onclick = () => {
+          fetch("http://localhost:3000/students",{
+            //发送请求的方法
+            method:"post",
+            //设置请求头
+            headers:{
+              //发送数据的类型
+              "Content-Type":"application/json"
+            },
+            //请求体
+            body:JSON.stringify({
+              name:"小李",
+              age:"23",
+              gender:"男",
+              address:"湖南"
+            })
+          })
+        };
+    </script>
+</body>
+
+</html>
