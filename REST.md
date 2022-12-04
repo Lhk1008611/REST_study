@@ -522,6 +522,5 @@
       >        }
       >    })
       >    ```
-      >
-      >    
 
+- 关于jsonwebtoken的使用具体可查看：[jsonwebtoken - npm (npmjs.com)](https://www.npmjs.com/package/jsonwebtoken)
