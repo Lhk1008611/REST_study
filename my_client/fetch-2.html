@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button class="btn" type="button">请求test</button>
+    <button class="btn-cancel" type="button">取消请求test</button>
+    <button class="btn-data" type="button">请求数据</button>
+    <script>
+        const btn = document.querySelector(".btn");
+        const btnCancel = document.querySelector(".btn-cancel");
+        const btnData = document.querySelector(".btn-data");
+        let abortController;
+        btn.onclick = () => {
+            //创建一个AbortController，用于终止请求
+            abortController = new AbortController();
+            fetch("http://localhost:3000/test", {
+                signal: abortController.signal
+            })
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err))
+        }
+
+        btnCancel.onclick = () => {
+            abortController && abortController.abort();  //abortController不为null时终止请求发送
+        }
+
+        btnData.onclick = async () => {
+            //基于async和await的方式使用fetch时一定需要try-catch
+            try {
+                const res = await fetch("http://localhost:3000/students", {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
+                const result = await res.json();
+                console.log(result);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+    </script>
+</body>
+
+</html>

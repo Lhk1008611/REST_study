@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axios</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <button class="btn-1">axios发送post请求</button>
+        <button class="btn-2">axios发送get请求</button>
+    </div>
+</body>
+<script>
+
+    axios.defaults.baseURL = 'http://localhost:3000';
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem("token")}`;
+
+    // 添加请求拦截器     config表示axios的配置对象
+    axios.interceptors.request.use(function (config) {
+        // 在发送请求之前做些什么
+        console.log(config);
+        return config;
+    }, function (error) {
+        // 对请求错误做些什么
+        return Promise.reject(error);
+    });
+
+    // 添加响应拦截器
+    axios.interceptors.response.use(function (response) {
+        // 2xx 范围内的状态码都会触发该函数。
+        // 对响应数据做点什么
+        return response;
+    }, function (error) {
+        // 超出 2xx 范围的状态码都会触发该函数。
+        // 对响应错误做点什么
+        return Promise.reject(error);
+    });
+
+    document.querySelector('.btn-1').onclick = () => {
+        // 发起一个post请求
+        axios({
+            method: 'post',
+            url: '/students',
+            //data 是作为请求体被发送的数据
+            data: {
+                name: "小李",
+                age: "23",
+                gender: "男",
+                address: "湖南"
+            }
+        })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    document.querySelector('.btn-2').onclick = () => {
+        // 发起一个post请求
+        axios({
+            method: 'get',
+            url: 'http://localhost:3000/students',
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+        })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+</script>
+
+</html>

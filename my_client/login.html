@@ -27,11 +27,61 @@
 </body>
 
 <script>
+    function loadData() {
+        fetch("http://localhost:3000/students", {
+            headers: {
+                /*
+                    将token放入Authorization这个头中一起发送给服务器
+                        - 且该头的格式为："Bearer token"
+                            - Bearer:是一种权限认证的方案
+                 */
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then((response) => {
+            if (response.status === 200) {
+                //response.json() 可以读取json格式的数据，返回一个promise
+                return response.json();
+            } else {
+                throw new Error("加载失败");
+            }
+        })
+            .then((response) => {
+                //获取到数据，进行页面渲染
+                console.log(response);
+                const list = document.querySelector(".student-list");
+                if (response.status !== "ok") {
+                    throw new Error("加载失败");
+                }
+                const ul = document.createElement("ul");
+                list.appendChild(ul);
+                for (let student of response.data) {
+                    ul.insertAdjacentHTML(
+                        "beforeend",
+                        `<li>${student.id} - ${student.name} - ${student.age} - ${student.gender} - ${student.address}</li>`
+                    )
+                }
+            })
+            .catch((error) => {
+                console.log("出错了", error);
+            })
+    }
+
+    function logout() {
+        localStorage.clear();
+        location.reload();//刷新页面
+    }
+
+
     const loginBtn = document.querySelector(".login-btn");
     const login = document.querySelector(".login");
     if (localStorage.getItem("nickname")) {
         login.innerHTML = `
                 <h1>用户名：${localStorage.getItem("nickname")}</h1>
+                <hr>
+                <Button class="load-btn" onclick="loadData()">加载数据</Button>
+                <Button class="logout" onclick="logout()">登出</Button>
+                <hr>
+                <div class="student-list"></div>
                 `
     } else {
         loginBtn.onclick = () => {
@@ -52,11 +102,16 @@
                     if (res.status !== "ok") {
                         throw new Error("用户名或密码错误");
                     }
-                    localStorage.setItem("username", res.data.username)
+                    localStorage.setItem("token", res.data.token)
                     localStorage.setItem("nickname", res.data.nickname)
 
                     login.innerHTML = `
                 <h1>用户名：${res.data.nickname}</h1>
+                <hr>
+                <Button class="load-btn" onclick="loadData()">加载数据</Button>
+                <Button class="logout" onclick="logout()">登出</Button>
+                <hr>
+                <div class="student-list"></div>
                 `
                 })
                 .catch((err) => {

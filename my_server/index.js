@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require("jsonwebtoken");
 const app = express();
 const STU_ARR = [
     {
@@ -33,7 +34,7 @@ app.use((req, res,next)=>{
     //设置允许访问服务器的网址，解决跨域问题
     res.setHeader("Access-Control-Allow-Origin","*");
     res.setHeader("Access-Control-Allow-Methods","GET,POST,PUT,PATCH,DELETE");
-    res.setHeader("Access-Control-Allow-Headers","Content-type");
+    res.setHeader("Access-Control-Allow-Headers","Content-type,Authorization");
     next();
 })
 
@@ -41,9 +42,21 @@ app.use((req, res,next)=>{
 app.post("/login",(req, res)=>{
     const {username,password} = req.body
     if (username === "lhk" && password === "123456"){
+        //登录成功，生成token  jwt.sign(payload,secretOrPrivateKey,options)
+        const token = jwt.sign({
+            username:"admin",
+            nickname:"超级管理员",
+        },"lhk1008611",
+            {
+                expiresIn: "1d"     //设置过期时间
+            }
+        );
         res.send({
             status:"ok",
-            data:{username:"admin",nickname:"超级管理员"}
+            data:{
+                token,
+                nickname:"超级管理员",
+            }
         })
     }else{
         res.status(403).send({
@@ -55,11 +68,23 @@ app.post("/login",(req, res)=>{
 
 //查询学生
 app.get("/students",(req, res)=>{
-
-    res.send({
+    try{
+        //验证用户是否登录
+        const token = req.get("Authorization").split(" ")[1];
+        //对token进行解密
+        const decodeToken = jwt.verify(token,"lhk1008611");
+        //解码成功，发送数据给客户端
+        res.send({
             status:"ok",
             data:STU_ARR
-    })
+        })
+    }catch (e){
+        //解码失败
+        res.status(403).send({
+            status:"error",
+            data:"token失效"
+        })
+    }
 })
 
 //查询某一个学生
@@ -130,6 +155,10 @@ app.put("/students",(req, res)=>{
             data:"学生不存在，修改失败"
         })
     }
+})
+
+app.get("/test",(req, res)=>{
+    
 })
 
 
